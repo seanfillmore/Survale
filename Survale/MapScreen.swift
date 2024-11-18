@@ -10,51 +10,45 @@ import CoreLocation
 import FirebaseFirestore
 
 struct MapScreen: View {
-    private func updateCameraRegion(with location: CLLocation) {
-        cameraRegion.center = location.coordinate
-    }
-    
+    @ObservedObject var locationManager: LocationManager
+    @State private var cameraRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+    )
+    @State private var isCameraInitialized = false
+
     private func coordinatesAreEqual(_ lhs: CLLocationCoordinate2D, _ rhs: CLLocationCoordinate2D?) -> Bool {
         guard let rhs = rhs else { return false }
         return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
     }
-    
-    @ObservedObject var locationManager: LocationManager // Shared LocationManager instance
-    @State private var cameraRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 0.0, longitude: 0.0),
-        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
-    )
-    
+
     var body: some View {
         ZStack {
-            // Show appropriate content based on location permissions
             if locationManager.permissionDenied {
                 PermissionDeniedView()
             } else if let location = locationManager.currentLocation {
-                Map(
-                    coordinateRegion: $cameraRegion,
-                    interactionModes: .all,
-                    showsUserLocation: true,
-                    annotationItems: locationManager.otherUsersLocations.values.filter {
-                        !coordinatesAreEqual($0, locationManager.currentLocation?.coordinate)
-                    }.map { UserLocation(coordinate: $0) }
-                ) { userLocation in
-                    MapAnnotation(coordinate: userLocation.coordinate) {
-                        Circle()
-                            .fill(Color.red)
-                            .frame(width: 10, height: 10)
+                MapView(usersLocations: locationManager.otherUsersLocations.values.filter { !coordinatesAreEqual($0, locationManager.currentLocation?.coordinate) }.map { UserLocation(coordinate: $0) }, cameraRegion: $cameraRegion)
+                    .onAppear {
+                        if !isCameraInitialized {
+                            cameraRegion.center = location.coordinate
+                            isCameraInitialized = true
+                        }
                     }
-                }
-                .onAppear {
-                    if cameraRegion.center.latitude == 0.0 && cameraRegion.center.longitude == 0.0 {
-                        cameraRegion.center = location.coordinate
+                    .onChange(of: locationManager.currentLocation) { newLocation in
+                        if !isCameraInitialized, let newLocation = newLocation {
+                            cameraRegion.center = newLocation.coordinate
+                            isCameraInitialized = true
+                        }
                     }
-                }
-                
-                VStack {
+            } else {
+                LoadingView()  // Display loading view while waiting for location
+            }
+
+            VStack {
+                Spacer()
+                HStack {
                     Spacer()
-                    HStack {
-                        Spacer()
+                    if let _ = locationManager.currentLocation {
                         Button(action: {
                             if let location = locationManager.currentLocation {
                                 withAnimation {
@@ -71,19 +65,38 @@ struct MapScreen: View {
                         .padding()
                     }
                 }
-                .alert(isPresented: $locationManager.permissionDenied) {
-                    Alert(
-                        title: Text("Location Access Denied"),
-                        message: Text("Please enable location permissions in settings."),
-                        primaryButton: .default(Text("Go to Settings"), action: {
-                            if let url = URL(string: UIApplication.openSettingsURLString) {
-                                UIApplication.shared.open(url)
-                            }
-                        }),
-                        secondaryButton: .cancel()
-                    )
-                }
             }
+        }
+        .alert(isPresented: $locationManager.permissionDenied) {
+            Alert(
+                title: Text("Location Access Denied"),
+                message: Text("Please enable location permissions in settings."),
+                primaryButton: .default(Text("Go to Settings"), action: {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }),
+                secondaryButton: .cancel()
+            )
+        }
+    }
+}
+
+struct PermissionDeniedView: View {
+    var body: some View {
+        VStack {
+            Text("Location permissions are required.")
+                .font(.title2)
+                .padding()
+
+            Button(action: {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }) {
+                Text("Open Settings")
+            }
+            .buttonStyle(PrimaryButtonStyle())
         }
     }
 }
@@ -101,11 +114,11 @@ struct LoadingView: View {
 struct UserLocation: Identifiable, Equatable, Hashable {
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
-    
+
     static func == (lhs: UserLocation, rhs: UserLocation) -> Bool {
         lhs.coordinate.latitude == rhs.coordinate.latitude && lhs.coordinate.longitude == rhs.coordinate.longitude
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(coordinate.latitude)
@@ -125,29 +138,8 @@ struct PrimaryButtonStyle: ButtonStyle {
     }
 }
 
-// Preview for MapScreen
 struct MapScreen_Previews: PreviewProvider {
     static var previews: some View {
         MapScreen(locationManager: LocationManager())
-    }
-}
-
-// Subview for Permission Denied Message
-struct PermissionDeniedView: View {
-    var body: some View {
-        VStack {
-            Text("Location permissions are required.")
-                .font(.title2)
-                .padding()
-
-            Button(action: {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-            }) {
-                Text("Open Settings")
-            }
-            .buttonStyle(PrimaryButtonStyle())
-        }
     }
 }
