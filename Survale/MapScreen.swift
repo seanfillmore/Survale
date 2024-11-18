@@ -16,6 +16,8 @@ struct MapScreen: View {
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     @State private var isCameraInitialized = false
+    @State private var mapType: MKMapType = .standard
+    @State private var showMapTypeSelection = false
 
     private func coordinatesAreEqual(_ lhs: CLLocationCoordinate2D, _ rhs: CLLocationCoordinate2D?) -> Bool {
         guard let rhs = rhs else { return false }
@@ -27,19 +29,24 @@ struct MapScreen: View {
             if locationManager.permissionDenied {
                 PermissionDeniedView()
             } else if let location = locationManager.currentLocation {
-                MapView(usersLocations: locationManager.otherUsersLocations.values.filter { !coordinatesAreEqual($0, locationManager.currentLocation?.coordinate) }.map { UserLocation(coordinate: $0) }, cameraRegion: $cameraRegion)
-                    .onAppear {
-                        if !isCameraInitialized {
-                            cameraRegion.center = location.coordinate
-                            isCameraInitialized = true
-                        }
+                MapView(
+                    usersLocations: locationManager.otherUsersLocations.values.filter {
+                        !coordinatesAreEqual($0, locationManager.currentLocation?.coordinate)
+                    }.map { UserLocation(coordinate: $0) },
+                    cameraRegion: $cameraRegion
+                )
+                .onAppear {
+                    if !isCameraInitialized {
+                        cameraRegion.center = location.coordinate
+                        isCameraInitialized = true
                     }
-                    .onChange(of: locationManager.currentLocation) { newLocation in
-                        if !isCameraInitialized, let newLocation = newLocation {
-                            cameraRegion.center = newLocation.coordinate
-                            isCameraInitialized = true
-                        }
+                }
+                .onChange(of: locationManager.currentLocation) { newLocation in
+                    if !isCameraInitialized, let newLocation = newLocation {
+                        cameraRegion.center = newLocation.coordinate
+                        isCameraInitialized = true
                     }
+                }
             } else {
                 LoadingView()  // Display loading view while waiting for location
             }
@@ -47,23 +54,79 @@ struct MapScreen: View {
             VStack {
                 Spacer()
                 HStack {
-                    Spacer()
-                    if let _ = locationManager.currentLocation {
-                        Button(action: {
-                            if let location = locationManager.currentLocation {
-                                withAnimation {
-                                    cameraRegion.center = location.coordinate
-                                }
-                            }
-                        }) {
-                            Image(systemName: "location.fill")
+                    Button(action: {
+                        withAnimation {
+                            showMapTypeSelection.toggle()
+                        }
+                    }) {
+                        Image(systemName: "binoculars.fill")
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding(.leading, 20)
+                    .sheet(isPresented: $showMapTypeSelection) {
+                        VStack {
+                            Text("Select Map Type")
+                                .font(.title2)
                                 .padding()
-                                .background(Color.white)
-                                .clipShape(Circle())
-                                .shadow(radius: 5)
+
+                            Button("Standard") {
+                                mapType = .standard
+                                showMapTypeSelection = false
+                            }
+                            .padding()
+
+                            Button("Satellite") {
+                                mapType = .satellite
+                                showMapTypeSelection = false
+                            }
+                            .padding()
+
+                            Button("Hybrid") {
+                                mapType = .hybrid
+                                showMapTypeSelection = false
+                            }
+                            .padding()
+
+                            Spacer()
                         }
                         .padding()
                     }
+
+                    Spacer()
+
+                    Button(action: {
+                        if let location = locationManager.currentLocation {
+                            withAnimation {
+                                cameraRegion.center = location.coordinate
+                            }
+                        }
+                    }) {
+                        Image(systemName: "location.fill")
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding()
+
+                    // Button to center on all users' locations
+                    Button(action: {
+                        withAnimation {
+                            let allCoordinates = locationManager.otherUsersLocations.values + [locationManager.currentLocation!.coordinate]
+                            let region = calculateBoundingRegion(for: allCoordinates)
+                            cameraRegion = region
+                        }
+                    }) {
+                        Image(systemName: "map.fill")
+                            .padding()
+                            .background(Color.white)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    .padding()
                 }
             }
         }
@@ -80,7 +143,32 @@ struct MapScreen: View {
             )
         }
     }
+
+    // Function to calculate a bounding region for multiple coordinates
+    private func calculateBoundingRegion(for coordinates: [CLLocationCoordinate2D]) -> MKCoordinateRegion {
+        guard !coordinates.isEmpty else {
+            return MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
+        }
+
+        var minLat = coordinates[0].latitude
+        var maxLat = coordinates[0].latitude
+        var minLon = coordinates[0].longitude
+        var maxLon = coordinates[0].longitude
+
+        for coordinate in coordinates {
+            minLat = min(minLat, coordinate.latitude)
+            maxLat = max(maxLat, coordinate.latitude)
+            minLon = min(minLon, coordinate.longitude)
+            maxLon = max(maxLon, coordinate.longitude)
+        }
+
+        let center = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2, longitude: (minLon + maxLon) / 2)
+        let span = MKCoordinateSpan(latitudeDelta: (maxLat - minLat) * 1.5, longitudeDelta: (maxLon - minLon) * 1.5)
+        return MKCoordinateRegion(center: center, span: span)
+    }
 }
+
+
 
 struct PermissionDeniedView: View {
     var body: some View {
@@ -143,3 +231,4 @@ struct MapScreen_Previews: PreviewProvider {
         MapScreen(locationManager: LocationManager())
     }
 }
+
