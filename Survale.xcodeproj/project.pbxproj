@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		455938572CE9687D001EB960 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 455938562CE9687D001EB960 /* FirebaseAnalytics */; };
+		455938592CE9687D001EB960 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 455938582CE9687D001EB960 /* FirebaseAuth */; };
+		4559385B2CE9687D001EB960 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 4559385A2CE9687D001EB960 /* FirebaseCore */; };
+		4559385D2CE9687D001EB960 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 4559385C2CE9687D001EB960 /* FirebaseFirestore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		455938332CE965A1001EB960 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +36,30 @@
 		4559383C2CE965A1001EB960 /* SurvaleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SurvaleUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		455938532CE96659001EB960 /* Exceptions for "Survale" folder in "SurvaleTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 455938312CE965A1001EB960 /* SurvaleTests */;
+		};
+		455938542CE96659001EB960 /* Exceptions for "Survale" folder in "SurvaleUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 4559383B2CE965A1001EB960 /* SurvaleUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		455938242CE9659F001EB960 /* Survale */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				455938532CE96659001EB960 /* Exceptions for "Survale" folder in "SurvaleTests" target */,
+				455938542CE96659001EB960 /* Exceptions for "Survale" folder in "SurvaleUITests" target */,
+			);
 			path = Survale;
 			sourceTree = "<group>";
 		};
@@ -52,6 +80,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				455938572CE9687D001EB960 /* FirebaseAnalytics in Frameworks */,
+				4559385D2CE9687D001EB960 /* FirebaseFirestore in Frameworks */,
+				4559385B2CE9687D001EB960 /* FirebaseCore in Frameworks */,
+				455938592CE9687D001EB960 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +144,10 @@
 			);
 			name = Survale;
 			packageProductDependencies = (
+				455938562CE9687D001EB960 /* FirebaseAnalytics */,
+				455938582CE9687D001EB960 /* FirebaseAuth */,
+				4559385A2CE9687D001EB960 /* FirebaseCore */,
+				4559385C2CE9687D001EB960 /* FirebaseFirestore */,
 			);
 			productName = Survale;
 			productReference = 455938222CE9659F001EB960 /* Survale.app */;
@@ -195,6 +231,9 @@
 			);
 			mainGroup = 455938192CE9659F001EB960;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 455938232CE9659F001EB960 /* Products */;
 			projectDirPath = "";
@@ -396,13 +435,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Survale/Preview Content\"";
+				DEVELOPMENT_TEAM = RJ7WAK3F24;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to show your position on the map, even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show your position on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -424,13 +467,17 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Survale/Preview Content\"";
+				DEVELOPMENT_TEAM = RJ7WAK3F24;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need your location to show your position on the map, even when the app is in the background.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to show your position on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -552,6 +599,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		455938562CE9687D001EB960 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		455938582CE9687D001EB960 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		4559385A2CE9687D001EB960 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		4559385C2CE9687D001EB960 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 455938552CE9687D001EB960 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4559381A2CE9659F001EB960 /* Project object */;
 }
